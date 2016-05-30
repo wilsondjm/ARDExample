@@ -1,9 +1,12 @@
 package app.vincenthu.citrix.com.myapplication;
 
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,6 +46,20 @@ public class forcastFragment extends Fragment {
         // Required empty public constructor
     }
 
+    // ---- custom functions
+    private void updateWeather(){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location = preferences.getString(getString(R.string.pref_general_location_key), getString(R.string.pref_general_location_default));
+        String unit = preferences.getString(getString(R.string.pref_general_units_key), getString((R.string.pref_general_degreeunits_default)));
+        new FetchWeatherTask().execute(location, unit);
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        updateWeather();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,9 +91,11 @@ public class forcastFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String clickedItem = parent.getItemAtPosition(position).toString();
                 Toast.makeText(getContext(), clickedItem, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getContext(), DetailActivity.class).putExtra(Intent.EXTRA_TEXT, clickedItem);
+                startActivity(intent);
+
             }
         });
-
         return rootview;
     }
 
@@ -91,8 +110,13 @@ public class forcastFragment extends Fragment {
         int id = item.getItemId();
 
         if (id == R.id.action_refresh){
-            new FetchWeatherTask().execute("Nanjing");
+            updateWeather();
             return true;
+        }
+
+        if (id == R.id.action_settings){
+            Intent intent = new Intent(getContext(), SettingsActivity.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
@@ -113,7 +137,7 @@ public class forcastFragment extends Fragment {
 
         @Override
         protected ArrayList<String> doInBackground(String... params) {
-            Log.i(this.getClass().getSimpleName(), params[0]);
+            Log.i(this.getClass().getSimpleName(), String.format("Location : %s, in unit: %s", params[0], params[1]));
             try {
                 Uri.Builder builder = new Uri.Builder();
                 builder.scheme("http");
@@ -124,9 +148,9 @@ public class forcastFragment extends Fragment {
                         .appendPath("daily")
                         .appendQueryParameter("q", String.format("%s, cn", params[0]))
                         .appendQueryParameter("cnt", "7")
-                        .appendQueryParameter("units", "metric")
+                        .appendQueryParameter("units", params[1])
                         .appendQueryParameter("appid", "c635c84e0de6b0a983ff2fe6ccff74e4");
-
+                Log.i(logTag, String.format("City : %s", params[0]));
                 //URL url = new URL(String.format("http://api.openweathermap.org/data/2.5/forecast/daily?q=%s,cn&cnt=7&units=metric&appid=c635c84e0de6b0a983ff2fe6ccff74e4", params[0]));
                 URL url = new URL(builder.build().toString());
                 urlConnection = (HttpURLConnection) url.openConnection();
