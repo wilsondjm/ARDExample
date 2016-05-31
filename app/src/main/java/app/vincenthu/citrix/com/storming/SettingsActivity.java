@@ -1,4 +1,4 @@
-package app.vincenthu.citrix.com.myapplication;
+package app.vincenthu.citrix.com.storming;
 
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -23,13 +23,13 @@ public class SettingsActivity extends PreferenceActivity
         // Add 'general' preferences, defined in the XML file
         // TODO: Add preferences from XML
 
-        addPreferencesFromResource(R.xml.pref_general);
+        addPreferencesFromResource(app.vincenthu.citrix.com.storming.R.xml.pref_general);
 
         // For all preferences, attach an OnPreferenceChangeListener so the UI summary can be
         // updated when the preference changes.
         // TODO: Add preferences
-        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_general_location_key)));
-        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_general_units_key)));
+        bindPreferenceSummaryToValue(findPreference(getString(app.vincenthu.citrix.com.storming.R.string.pref_general_location_key)));
+        bindPreferenceSummaryToValue(findPreference(getString(app.vincenthu.citrix.com.storming.R.string.pref_general_units_key)));
     }
 
     /**

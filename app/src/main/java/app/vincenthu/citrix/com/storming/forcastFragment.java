@@ -1,4 +1,4 @@
-package app.vincenthu.citrix.com.myapplication;
+package app.vincenthu.citrix.com.storming;
 
 
 import android.content.Intent;
@@ -49,8 +49,8 @@ public class forcastFragment extends Fragment {
     // ---- custom functions
     private void updateWeather(){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String location = preferences.getString(getString(R.string.pref_general_location_key), getString(R.string.pref_general_location_default));
-        String unit = preferences.getString(getString(R.string.pref_general_units_key), getString((R.string.pref_general_degreeunits_default)));
+        String location = preferences.getString(getString(app.vincenthu.citrix.com.storming.R.string.pref_general_location_key), getString(app.vincenthu.citrix.com.storming.R.string.pref_general_location_default));
+        String unit = preferences.getString(getString(app.vincenthu.citrix.com.storming.R.string.pref_general_units_key), getString((app.vincenthu.citrix.com.storming.R.string.pref_general_degreeunits_default)));
         new FetchWeatherTask().execute(location, unit);
     }
 
@@ -74,14 +74,14 @@ public class forcastFragment extends Fragment {
         ArrayList<String> arrayList = new ArrayList<String>(Arrays.asList(list));
         forcastAdapter = new ArrayAdapter<String>(
                 getActivity(),
-                R.layout.list_item_forecast,
-                R.id.list_item_forecast_textview,
+                app.vincenthu.citrix.com.storming.R.layout.list_item_forecast,
+                app.vincenthu.citrix.com.storming.R.id.list_item_forecast_textview,
                 arrayList
         );
 
         // Inflate the layout for this fragment
-        View rootview = inflater.inflate(R.layout.fragment_forcast, container, false);
-        ListView view = (ListView) rootview.findViewById(R.id.listview_forecast);
+        View rootview = inflater.inflate(app.vincenthu.citrix.com.storming.R.layout.fragment_forcast, container, false);
+        ListView view = (ListView) rootview.findViewById(app.vincenthu.citrix.com.storming.R.id.listview_forecast);
         view.setAdapter(forcastAdapter);
         view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -98,7 +98,7 @@ public class forcastFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu, menu);
+        inflater.inflate(app.vincenthu.citrix.com.storming.R.menu.menu, menu);
     }
 
     @Override
@@ -106,20 +106,20 @@ public class forcastFragment extends Fragment {
 
         int id = item.getItemId();
 
-        if (id == R.id.action_refresh){
+        if (id == app.vincenthu.citrix.com.storming.R.id.action_refresh){
             updateWeather();
             return true;
         }
 
-        if (id == R.id.action_settings){
+        if (id == app.vincenthu.citrix.com.storming.R.id.action_settings){
             Intent intent = new Intent(getContext(), SettingsActivity.class);
             startActivity(intent);
             return true;
         }
 
-        if (id == R.id.action_locatemap){
+        if (id == app.vincenthu.citrix.com.storming.R.id.action_locatemap){
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String location = preferences.getString(getString(R.string.pref_general_location_key), getString(R.string.pref_general_location_default));
+            String location = preferences.getString(getString(app.vincenthu.citrix.com.storming.R.string.pref_general_location_key), getString(app.vincenthu.citrix.com.storming.R.string.pref_general_location_default));
             Uri geouri = Uri.parse("geo:0,0?").buildUpon().appendQueryParameter("q", location).build();
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(geouri);
@@ -141,7 +141,7 @@ public class forcastFragment extends Fragment {
         private String parseDateTime(long seconds){
             long milliseconds = seconds * 1000;
             Date dateData = new Date(milliseconds);
-            SimpleDateFormat desiredFormat = new SimpleDateFormat("EE MM/dd");
+            SimpleDateFormat desiredFormat = new SimpleDateFormat("EE M/dd");
             String date = desiredFormat.format(dateData);
             return date;
         }
@@ -196,17 +196,27 @@ public class forcastFragment extends Fragment {
             try {
                 JSONObject result = new JSONObject(responseJSON);
                 Log.d(logTag, result.toString());
-                JSONArray days = result.getJSONArray("list");
 
+                String name = result.getJSONObject("city").getString("name");
+                String country = result.getJSONObject("city").getString("country");
+                String longitude = result.getJSONObject("city").getJSONObject("coord").getString("lon");
+                String latitude = result.getJSONObject("city").getJSONObject("coord").getString("lat");
+
+                JSONArray days = result.getJSONArray("list");
                 for (int i = 0; i < days.length(); i++) {
                     JSONObject day = days.getJSONObject(i);
                     //date time txt :
                     String time = parseDateTime(day.getLong("dt"));
-                    JSONArray weatherArray = (JSONArray)day.getJSONArray("weather");
+                    JSONArray weatherArray = day.getJSONArray("weather");
                     JSONObject weatherObject = weatherArray.getJSONObject(0);
                     String weather = (String)weatherObject.get("main");
-                    String degree = Double.toString(day.getJSONObject("temp").getDouble("day"));
-                    String row = String.format("%s   %s - %s", time, weather, degree);
+                    String weatherDsc = weatherObject.getString("description");
+                    String wind = day.getString("speed");
+                    String pressure = day.getString("pressure");
+                    String humidity = day.getString("humidity");
+                    String temperature_min = Double.toString(day.getJSONObject("temp").getDouble("min"));
+                    String temperature_max = Double.toString(day.getJSONObject("temp").getDouble("max"));
+                    String row = String.format("%s   %s - %s/%s", time, weather, temperature_max, temperature_min);
                     rows.add(row);
                 }
             } catch (Exception JSONException) {

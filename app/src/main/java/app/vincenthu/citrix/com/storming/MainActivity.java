@@ -1,4 +1,4 @@
-package app.vincenthu.citrix.com.myapplication;
+package app.vincenthu.citrix.com.storming;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -16,10 +16,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(app.vincenthu.citrix.com.storming.R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new forcastFragment())
+                    .add(app.vincenthu.citrix.com.storming.R.id.container, new forcastFragment())
                     .commit();
         }
     }

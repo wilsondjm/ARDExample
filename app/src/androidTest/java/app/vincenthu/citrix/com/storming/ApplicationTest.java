@@ -1,4 +1,4 @@
-package app.vincenthu.citrix.com.myapplication;
+package app.vincenthu.citrix.com.storming;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
