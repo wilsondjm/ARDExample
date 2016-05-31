@@ -9,4 +9,8 @@
         android:title="@string/menu_action_settings"
         android:orderInCategory="1"
         app:showAsAction="never" />
+    <item android:id="@+id/action_locatemap"
+        android:title="@string/menu_action_map_title"
+        android:orderInCategory="1"
+        app:showAsAction="never" />
 </menu>

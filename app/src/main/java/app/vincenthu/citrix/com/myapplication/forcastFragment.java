@@ -69,10 +69,7 @@ public class forcastFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        String[] list = {
-            "a",
-            "b"
-        };
+        String[] list = {};
 
         ArrayList<String> arrayList = new ArrayList<String>(Arrays.asList(list));
         forcastAdapter = new ArrayAdapter<String>(
@@ -117,6 +114,20 @@ public class forcastFragment extends Fragment {
         if (id == R.id.action_settings){
             Intent intent = new Intent(getContext(), SettingsActivity.class);
             startActivity(intent);
+            return true;
+        }
+
+        if (id == R.id.action_locatemap){
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String location = preferences.getString(getString(R.string.pref_general_location_key), getString(R.string.pref_general_location_default));
+            Uri geouri = Uri.parse("geo:0,0?").buildUpon().appendQueryParameter("q", location).build();
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(geouri);
+            if(intent.resolveActivity(getActivity().getPackageManager())!=null){
+                startActivity(intent);
+            }else{
+                Log.e(this.getClass().getSimpleName(), "Failed to resolve the map intent wit geo" + geouri.toString());
+            }
         }
 
         return super.onOptionsItemSelected(item);
@@ -133,6 +144,11 @@ public class forcastFragment extends Fragment {
             SimpleDateFormat desiredFormat = new SimpleDateFormat("EE MM/dd");
             String date = desiredFormat.format(dateData);
             return date;
+        }
+
+        private Uri parseGeoUri(double lat, double lon){
+            Uri resultUrl = Uri.parse(String.format("geo:%f,%f", lat, lon));
+            return resultUrl;
         }
 
         @Override
@@ -179,8 +195,9 @@ public class forcastFragment extends Fragment {
 
             try {
                 JSONObject result = new JSONObject(responseJSON);
+                Log.d(logTag, result.toString());
                 JSONArray days = result.getJSONArray("list");
-                Log.d(logTag, days.toString());
+
                 for (int i = 0; i < days.length(); i++) {
                     JSONObject day = days.getJSONObject(i);
                     //date time txt :
