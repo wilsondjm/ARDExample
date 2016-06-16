@@ -1,5 +1,8 @@
 package app.vincenthu.citrix.com.storming.data;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 /**
@@ -7,11 +10,21 @@ import android.provider.BaseColumns;
  */
 public final class StormingContract {
 
+    public static final String CONTENT_AUTHORITY = "com.citrix.vincenthu.app.storming";
+    public static final Uri BASE_CONTENT_URI = Uri.parse(String.format("content://%s", CONTENT_AUTHORITY));
+
+    public static final String PATH_WEATHER = "weather";
+    public static final String PATH_LOCATION = "location";
+
     public StormingContract(){
 
     }
 
     public static abstract class WeatherInfoEntry implements BaseColumns{
+
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_WEATHER).build();
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_WEATHER;
 
         //the table name
         public static final String TABLE_NAME = "WeatherInfo";
@@ -26,14 +39,32 @@ public final class StormingContract {
         public static final String COLUMN_NAME_WIND = "wind";
         public static final String COLUMN_NAME_HUMIDITY = "humidity";
         public static final String COLUMN_NAME_PRESSURE = "pressure";
+
+        public static Uri buildWeatherUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static Uri buildWeatherWithLocationUri(String location){
+            return CONTENT_URI.buildUpon().appendPath(location).build();
+        }
     }
 
     public static abstract class LocationEntry implements BaseColumns{
         public static final String TABLE_NAME = "Location";
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_LOCATION).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_LOCATION;
 
         public static final String COLUMN_NAME_Latitude = "latitude";
         public static final String COLUMN_NAME_Longitude = "longitude";
         public static final String COLUMN_NAME_Name = "name";
+
+        public static Uri buildLocationUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+
     }
 
     public static final String WeatherInfoEntry_Create_Table = "CREATE TABLE %s (" +

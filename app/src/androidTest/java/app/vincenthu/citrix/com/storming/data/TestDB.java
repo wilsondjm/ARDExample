@@ -1,4 +1,4 @@
-package app.vincenthu.citrix.com.storming;
+package app.vincenthu.citrix.com.storming.data;
 
 import android.content.ContentValues;
 import android.database.Cursor;
