@@ -4,6 +4,7 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
 /**
@@ -11,6 +12,21 @@ import android.net.Uri;
  */
 public class WeatherProvider extends ContentProvider {
     private static final UriMatcher uriMacher = buildUriMacher();
+    private StormingDBHelper dbHelper;
+    private static final SQLiteQueryBuilder view_weatherbylocationquerybuilder;
+
+    static{
+        view_weatherbylocationquerybuilder = new SQLiteQueryBuilder();
+        view_weatherbylocationquerybuilder.setTables(
+                String.format("%s INNER JOIN %s ON %s.%s = %s.%s",
+                        StormingContract.WeatherInfoEntry.TABLE_NAME,
+                        StormingContract.LocationEntry.TABLE_NAME,
+                        StormingContract.WeatherInfoEntry.TABLE_NAME,
+                        StormingContract.WeatherInfoEntry.COLUMN_NAME_LOCATION_ID,
+                        StormingContract.LocationEntry.TABLE_NAME,
+                        StormingContract.LocationEntry._ID)
+        );
+    }
 
     static final int WEATHER = 100;
     static final int WEATHER_WITH_LOCATION = 101;
@@ -28,9 +44,27 @@ public class WeatherProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        // Student: This is a lot like the delete function.  We return the number of rows impacted
-        // by the update.
+        dbHelper = new StormingDBHelper(getContext());
         return true;
+    }
+
+    @Override
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
+                        String sortOrder) {
+        Cursor cursor;
+        switch (uriMacher.match(uri)){
+            case WEATHER:
+                return null;
+            case WEATHER_WITH_LOCATION:
+                cursor =  getWeatherbyLocation(uri, projection, sortOrder);
+                break;
+            case LOCATION:
+                return null;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        return cursor;
     }
 
     @Override
@@ -73,9 +107,20 @@ public class WeatherProvider extends ContentProvider {
         return 0;
     }
 
-    @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
-                        String sortOrder) {
-        return null;
+    private Cursor getWeatherbyLocation(Uri uri, String[] projection, String sortOrder){
+        String location = StormingContract.WeatherInfoEntry.getLocationSegement(uri);
+
+        StringBuilder selection = new StringBuilder("");
+        selection.append(StormingContract.LocationEntry.TABLE_NAME).append(".").append(StormingContract.LocationEntry.COLUMN_NAME_Name).append(" = ?");
+        String []selectionArgs = new String[]{location};
+
+        Cursor cursor = view_weatherbylocationquerybuilder.query(dbHelper.getReadableDatabase(),
+                projection,
+                selection.toString(),
+                selectionArgs,
+                null,
+                null,
+                sortOrder);
+        return cursor;
     }
 }

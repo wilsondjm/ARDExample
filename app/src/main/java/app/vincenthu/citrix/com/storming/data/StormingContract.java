@@ -47,6 +47,10 @@ public final class StormingContract {
         public static Uri buildWeatherWithLocationUri(String location){
             return CONTENT_URI.buildUpon().appendPath(location).build();
         }
+
+        public static String getLocationSegement(Uri uri){
+            return uri.getPathSegments().get(1);
+        }
     }
 
     public static abstract class LocationEntry implements BaseColumns{
