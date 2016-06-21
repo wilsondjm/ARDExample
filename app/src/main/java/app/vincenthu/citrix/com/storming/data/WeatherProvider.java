@@ -4,6 +4,8 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
@@ -54,12 +56,13 @@ public class WeatherProvider extends ContentProvider {
         Cursor cursor;
         switch (uriMacher.match(uri)){
             case WEATHER:
-                return null;
+                cursor =  getWeather(uri, projection, sortOrder);
+                break;
             case WEATHER_WITH_LOCATION:
                 cursor =  getWeatherbyLocation(uri, projection, sortOrder);
                 break;
             case LOCATION:
-                return null;
+                cursor = getLocation(uri, projection, sortOrder);
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -86,25 +89,71 @@ public class WeatherProvider extends ContentProvider {
     @Override
     public int update(
             Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        // Student: This is a lot like the delete function.  We return the number of rows impacted
-        // by the update.
-        return 0;
+        int affectedRows = 0;
+        int match = uriMacher.match(uri);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        switch (match){
+            case WEATHER:
+                affectedRows = db.update(StormingContract.WeatherInfoEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            case LOCATION:
+                affectedRows = db.update(StormingContract.LocationEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        if (affectedRows != 0){
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        return affectedRows;
     }
 
     @Override
-    public Uri insert(
-            Uri uri, ContentValues values) {
-        // Student: This is a lot like the delete function.  We return the number of rows impacted
-        // by the update.
-        return null;
+    public Uri insert(Uri uri, ContentValues values) {
+        final int match = uriMacher.match(uri);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        long _id = -1;
+        Uri result = null;
+        switch (match){
+            case WEATHER:
+                _id = db.insert(StormingContract.WeatherInfoEntry.TABLE_NAME, null, values);
+                if( _id < 0 ){
+                    throw new SQLException("Unable to insert in to Weather table");
+                }
+                result = StormingContract.WeatherInfoEntry.buildWeatherUri(_id);
+            case LOCATION:
+                _id = db.insert(StormingContract.LocationEntry.TABLE_NAME, null, values);
+                if( _id < 0 ){
+                    throw new SQLException("Unable to insert in to Location table");
+                }
+                result = StormingContract.WeatherInfoEntry.buildWeatherUri(_id);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return result;
     }
 
     @Override
     public int delete(
             Uri uri, String selection, String[] selectionArgs) {
-        // Student: This is a lot like the delete function.  We return the number of rows impacted
-        // by the update.
-        return 0;
+        int affectedRows = 0;
+        final int match = uriMacher.match(uri);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        switch(match){
+            case WEATHER:
+                affectedRows = db.delete(StormingContract.WeatherInfoEntry.TABLE_NAME, selection, selectionArgs );
+                break;
+            case LOCATION:
+                affectedRows = db.delete(StormingContract.LocationEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            default:
+                throw new UnsupportedOperationException("no delein in this uri:" + uri);
+        }
+        if (affectedRows != 0){
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        return affectedRows;
     }
 
     private Cursor getWeatherbyLocation(Uri uri, String[] projection, String sortOrder){
@@ -121,6 +170,16 @@ public class WeatherProvider extends ContentProvider {
                 null,
                 null,
                 sortOrder);
+        return cursor;
+    }
+
+    private Cursor getWeather(Uri uri, String[] projection, String sortOrder){
+        Cursor cursor = dbHelper.getReadableDatabase().query(StormingContract.WeatherInfoEntry.TABLE_NAME, null, null, null, null, null, null);
+        return cursor;
+    }
+
+    private Cursor getLocation(Uri uri, String[] projection, String sortOrder){
+        Cursor cursor = dbHelper.getReadableDatabase().query(StormingContract.LocationEntry.TABLE_NAME, null, null, null, null, null, null);
         return cursor;
     }
 }
