@@ -163,6 +163,7 @@ public class WeatherProvider extends ContentProvider {
         selection.append(StormingContract.LocationEntry.TABLE_NAME).append(".").append(StormingContract.LocationEntry.COLUMN_NAME_Name).append(" = ?");
         String []selectionArgs = new String[]{location};
 
+
         Cursor cursor = view_weatherbylocationquerybuilder.query(dbHelper.getReadableDatabase(),
                 projection,
                 selection.toString(),
