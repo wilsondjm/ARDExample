@@ -89,6 +89,7 @@ public final class StormingContract {
             LocationEntry._ID + " INTEGER PRIMARY KEY," +
             LocationEntry.COLUMN_NAME_Latitude + " TEXT NOT NULL," +
             LocationEntry.COLUMN_NAME_Longitude + " TEXT NOT NULL," +
-            LocationEntry.COLUMN_NAME_Name + " TEXT NOT NULL" +
+            LocationEntry.COLUMN_NAME_Name + " TEXT NOT NULL," +
+            " UNIQUE (" + LocationEntry.COLUMN_NAME_Name + " ) ON CONFLICT REPLACE" +
             " );";
 }
