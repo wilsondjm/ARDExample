@@ -78,7 +78,7 @@ public final class StormingContract {
             WeatherInfoEntry.COLUMN_NAME_PRESSURE + " TEXT NOT NULL," +
             WeatherInfoEntry.COLUMN_NAME_TEMPERATURE_MAX + " TEXT NOT NULL," +
             WeatherInfoEntry.COLUMN_NAME_TEMPERATURE_MIN + " TEXT NOT NULL," +
-            WeatherInfoEntry.COLUMN_NAME_TIME + " TEXT NOT NULL," +
+            WeatherInfoEntry.COLUMN_NAME_TIME + " REAL NOT NULL," +
             WeatherInfoEntry.COLUMN_NAME_WEATHER_CONDITION + " TEXT NOT NULL," +
             WeatherInfoEntry.COLUMN_NAME_WEATHER_DESCRIPTION + " TEXT NOT NULL," +
             WeatherInfoEntry.COLUMN_NAME_WIND + " TEXT NOT NULL," +

@@ -25,6 +25,7 @@ import java.util.Date;
 import javax.xml.transform.URIResolver;
 
 import app.vincenthu.citrix.com.storming.data.StormingContract;
+import app.vincenthu.citrix.com.storming.util.Utils;
 
 /**
  * Created by Administrator on 6/28/2016.
@@ -44,11 +45,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, ArrayList<String>>
     }
 
     private String parseDateTime(long seconds){
-        long milliseconds = seconds * 1000;
-        Date dateData = new Date(milliseconds);
-        SimpleDateFormat desiredFormat = new SimpleDateFormat("EE M/dd");
-        String date = desiredFormat.format(dateData);
-        return date;
+        return Utils.parseTimefromRealtoStringDate(seconds, "EE M/dd");
     }
 
     private Uri parseGeoUri(double lat, double lon){
@@ -84,7 +81,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, ArrayList<String>>
                                              String weather,
                                              String temperature_min,
                                              String temperature_max,
-                                             String time,
+                                             Long time,
                                              String humidity,
                                              String pressure,
                                              int locationID){
@@ -158,6 +155,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, ArrayList<String>>
                 JSONObject day = days.getJSONObject(i);
                 //date time txt :
                 String time = parseDateTime(day.getLong("dt"));
+                Long timeinSeconds = day.getLong("dt");
                 JSONArray weatherArray = day.getJSONArray("weather");
                 JSONObject weatherObject = weatherArray.getJSONObject(0);
                 String weather = (String)weatherObject.get("main");
@@ -171,7 +169,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, ArrayList<String>>
                 String row = String.format("%s   %s - %s/%s", time, weather, temperature_max, temperature_min);
                 rows.add(row);
 
-                valueList.add(FromStringstoValue(wind, weatherDsc, weather, temperature_min, temperature_max, time, humidity, pressure ,locationID));
+                valueList.add(FromStringstoValue(wind, weatherDsc, weather, temperature_min, temperature_max, timeinSeconds, humidity, pressure ,locationID));
             }
         } catch (Exception JSONException) {
             Log.e(logTag, JSONException.getMessage());

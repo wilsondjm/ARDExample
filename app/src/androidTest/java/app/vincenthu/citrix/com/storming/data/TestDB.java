@@ -131,7 +131,7 @@ public class TestDB extends AndroidTestCase{
         weatherValues.put(StormingContract.WeatherInfoEntry.COLUMN_NAME_PRESSURE, "1018.17");
         weatherValues.put(StormingContract.WeatherInfoEntry.COLUMN_NAME_TEMPERATURE_MAX, "23");
         weatherValues.put(StormingContract.WeatherInfoEntry.COLUMN_NAME_TEMPERATURE_MIN, "17");
-        weatherValues.put(StormingContract.WeatherInfoEntry.COLUMN_NAME_TIME, "123d");
+        weatherValues.put(StormingContract.WeatherInfoEntry.COLUMN_NAME_TIME, 12334);
         weatherValues.put(StormingContract.WeatherInfoEntry.COLUMN_NAME_WEATHER_CONDITION, "Cloudy");
         weatherValues.put(StormingContract.WeatherInfoEntry.COLUMN_NAME_WEATHER_DESCRIPTION, "Thick Clouds");
         weatherValues.put(StormingContract.WeatherInfoEntry.COLUMN_NAME_WIND, "3.83");
