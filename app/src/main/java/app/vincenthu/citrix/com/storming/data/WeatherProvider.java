@@ -135,6 +135,49 @@ public class WeatherProvider extends ContentProvider {
     }
 
     @Override
+    public int bulkInsert(Uri uri, ContentValues[] valuesList){
+        final int match = uriMacher.match(uri);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        long _id = -1;
+        int nCount = 0;
+        switch (match) {
+            case WEATHER:
+                try {
+                    db.beginTransaction();
+                    for (ContentValues values : valuesList) {
+                        _id = db.insert(StormingContract.WeatherInfoEntry.TABLE_NAME, null, values);
+                        if (_id < 0) {
+                            throw new SQLException(String.format("Unable to insert with data count : %d", _id));
+                        }
+                        nCount++;
+                    }
+                }finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                break;
+            case LOCATION:
+                try {
+                    db.beginTransaction();
+                    for (ContentValues values : valuesList) {
+                        _id = db.insert(StormingContract.LocationEntry.TABLE_NAME, null, values);
+                        if (_id < 0) {
+                            throw new SQLException(String.format("Unable to insert with data count : %d", _id));
+                        }
+                        nCount++;
+                    }
+                }finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                break;
+            default:
+                return super.bulkInsert(uri, valuesList);
+        }
+        return nCount;
+    }
+
+    @Override
     public int delete(
             Uri uri, String selection, String[] selectionArgs) {
         int affectedRows = 0;

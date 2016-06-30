@@ -67,8 +67,6 @@ public final class StormingContract {
         public static Uri buildLocationUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
-
-
     }
 
     public static final String WeatherInfoEntry_Create_Table = "CREATE TABLE %s (" +

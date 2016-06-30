@@ -1,6 +1,8 @@
 package app.vincenthu.citrix.com.storming;
 
 import android.app.Activity;
+import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -21,6 +23,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.xml.transform.URIResolver;
 
@@ -30,7 +33,7 @@ import app.vincenthu.citrix.com.storming.util.Utils;
 /**
  * Created by Administrator on 6/28/2016.
  */
-public class FetchWeatherTask extends AsyncTask<String, Void, ArrayList<String>> {
+public class FetchWeatherTask extends AsyncTask<String, Void, Integer> {
     String logTag = this.getClass().getSimpleName();
     HttpURLConnection urlConnection = null;
     String responseJSON = null;
@@ -76,6 +79,16 @@ public class FetchWeatherTask extends AsyncTask<String, Void, ArrayList<String>>
         return locationID;
     }
 
+    private int ManageWeatherInfo(List<ContentValues> valuesList){
+        ContentResolver resolver = activity.getContentResolver();
+        int nCount = resolver.bulkInsert(StormingContract.WeatherInfoEntry.CONTENT_URI, valuesList.toArray(new ContentValues[valuesList.size()]));
+        return nCount;
+    }
+
+    private String[] queryDBforDisplayWeather(Uri uri, int limitCount){
+        activity.getContentResolver().query(StormingContract.WeatherInfoEntry.CONTENT_URI, null, null, null, "time DESC + LIMIT 7");
+    }
+
     private ContentValues FromStringstoValue(String wind,
                                              String weatherDsc,
                                              String weather,
@@ -99,7 +112,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, ArrayList<String>>
     }
 
     @Override
-    protected ArrayList<String> doInBackground(String... params) {
+    protected Integer doInBackground(String... params) {
         Log.i(this.getClass().getSimpleName(), String.format("Location : %s, in unit: %s", params[0], params[1]));
         try {
             Uri.Builder builder = new Uri.Builder();
@@ -174,12 +187,14 @@ public class FetchWeatherTask extends AsyncTask<String, Void, ArrayList<String>>
         } catch (Exception JSONException) {
             Log.e(logTag, JSONException.getMessage());
         }
-
-        return rows;
+        return ManageWeatherInfo(valueList);
     }
+
     @Override
-    protected void onPostExecute(ArrayList<String> result) {
+    protected void onPostExecute(Integer nCount) {
         forecastAdapter.clear();
-        forecastAdapter.addAll(result);
+
+
+        forecastAdapter.addAll();
     }
 }
