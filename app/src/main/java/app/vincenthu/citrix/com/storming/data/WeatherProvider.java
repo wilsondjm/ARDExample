@@ -63,6 +63,7 @@ public class WeatherProvider extends ContentProvider {
                 break;
             case LOCATION:
                 cursor = getLocation(uri, projection, sortOrder);
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }

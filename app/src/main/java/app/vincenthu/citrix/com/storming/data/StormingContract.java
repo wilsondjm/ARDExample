@@ -10,7 +10,7 @@ import android.provider.BaseColumns;
  */
 public final class StormingContract {
 
-    public static final String CONTENT_AUTHORITY = "com.citrix.vincenthu.app.storming";
+    public static final String CONTENT_AUTHORITY = "app.vincenthu.citrix.com.storming";
     public static final Uri BASE_CONTENT_URI = Uri.parse(String.format("content://%s", CONTENT_AUTHORITY));
 
     public static final String PATH_WEATHER = "weather";

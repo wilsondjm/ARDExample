@@ -33,7 +33,7 @@
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity"></activity>
         <provider
-            android:authorities="com.citrix.vincenthu.app.storming"
+            android:authorities="app.vincenthu.citrix.com.storming"
             android:name=".data.WeatherProvider"></provider>
     </application>
 
