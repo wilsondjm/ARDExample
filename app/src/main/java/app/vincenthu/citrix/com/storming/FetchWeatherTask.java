@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -86,7 +87,23 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Integer> {
     }
 
     private String[] queryDBforDisplayWeather(Uri uri, int limitCount){
-        activity.getContentResolver().query(StormingContract.WeatherInfoEntry.CONTENT_URI, null, null, null, "time DESC + LIMIT 7");
+        String[] displays = new String[7];
+        Cursor cursor = activity.getContentResolver().query(StormingContract.WeatherInfoEntry.CONTENT_URI, null, null, null, "time DESC + LIMIT 7");
+        int index = 0;
+        if(cursor.moveToFirst()){
+            do{
+                long time = cursor.getLong(cursor.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_TIME));
+                String weather = cursor.getString(cursor.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_WEATHER_CONDITION));
+                String temperature_max = cursor.getString(cursor.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_TEMPERATURE_MAX));
+                String temperature_min = cursor.getString(cursor.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_TEMPERATURE_MIN));
+
+                String date = parseDateTime(time);
+
+                displays[index] = String.format("%s   %s - %s/%s", date, weather, temperature_max, temperature_min);
+
+                }while(cursor.moveToNext());
+        }
+        return displays;
     }
 
     private ContentValues FromStringstoValue(String wind,
@@ -193,8 +210,9 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Integer> {
     @Override
     protected void onPostExecute(Integer nCount) {
         forecastAdapter.clear();
-
-
-        forecastAdapter.addAll();
+        String[] weatherList = queryDBforDisplayWeather(StormingContract.WeatherInfoEntry.CONTENT_URI, 7);
+        if (weatherList.length < 7)
+            Toast.makeText(activity, "Error in loading weather from DB", Toast.LENGTH_SHORT).show();
+        forecastAdapter.addAll(weatherList);
     }
 }
