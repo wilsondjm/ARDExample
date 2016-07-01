@@ -151,10 +151,10 @@ public class WeatherProvider extends ContentProvider {
                         }
                         nCount++;
                     }
+                    db.setTransactionSuccessful();
                 }finally {
                     db.endTransaction();
                 }
-                getContext().getContentResolver().notifyChange(uri, null);
                 break;
             case LOCATION:
                 try {
@@ -166,14 +166,15 @@ public class WeatherProvider extends ContentProvider {
                         }
                         nCount++;
                     }
+                    db.setTransactionSuccessful();
                 }finally {
                     db.endTransaction();
                 }
-                getContext().getContentResolver().notifyChange(uri, null);
                 break;
             default:
                 return super.bulkInsert(uri, valuesList);
         }
+        getContext().getContentResolver().notifyChange(uri, null);
         return nCount;
     }
 

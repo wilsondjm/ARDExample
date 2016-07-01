@@ -34,7 +34,7 @@ import app.vincenthu.citrix.com.storming.util.Utils;
 /**
  * Created by Administrator on 6/28/2016.
  */
-public class FetchWeatherTask extends AsyncTask<String, Void, Integer> {
+public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
     String logTag = this.getClass().getSimpleName();
     HttpURLConnection urlConnection = null;
     String responseJSON = null;
@@ -96,10 +96,15 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Integer> {
                 String weather = cursor.getString(cursor.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_WEATHER_CONDITION));
                 String temperature_max = cursor.getString(cursor.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_TEMPERATURE_MAX));
                 String temperature_min = cursor.getString(cursor.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_TEMPERATURE_MIN));
+                String weather_desc = cursor.getString(cursor.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_WEATHER_DESCRIPTION));
 
                 String date = parseDateTime(time);
 
-                displays[index] = String.format("%s   %s - %s/%s", date, weather, temperature_max, temperature_min);
+                displays[index] = String.format("%s   %s/%s - %s/%s", date, weather, weather_desc, temperature_max, temperature_min);
+                index++;
+                if(index > 6){
+                    break;
+                }
 
                 }while(cursor.moveToNext());
         }
@@ -129,7 +134,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Integer> {
     }
 
     @Override
-    protected Integer doInBackground(String... params) {
+    protected String[] doInBackground(String... params) {
         Log.i(this.getClass().getSimpleName(), String.format("Location : %s, in unit: %s", params[0], params[1]));
         try {
             Uri.Builder builder = new Uri.Builder();
@@ -204,15 +209,16 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Integer> {
         } catch (Exception JSONException) {
             Log.e(logTag, JSONException.getMessage());
         }
-        return ManageWeatherInfo(valueList);
+        int nCount = ManageWeatherInfo(valueList);
+        String[] weatherList = queryDBforDisplayWeather(StormingContract.WeatherInfoEntry.CONTENT_URI, nCount);
+        if (weatherList.length < nCount)
+            Toast.makeText(activity, "Error in loading weather from DB", Toast.LENGTH_SHORT).show();
+        return weatherList;
     }
 
     @Override
-    protected void onPostExecute(Integer nCount) {
+    protected void onPostExecute(String[] weatherList) {
         forecastAdapter.clear();
-        String[] weatherList = queryDBforDisplayWeather(StormingContract.WeatherInfoEntry.CONTENT_URI, 7);
-        if (weatherList.length < 7)
-            Toast.makeText(activity, "Error in loading weather from DB", Toast.LENGTH_SHORT).show();
         forecastAdapter.addAll(weatherList);
     }
 }
