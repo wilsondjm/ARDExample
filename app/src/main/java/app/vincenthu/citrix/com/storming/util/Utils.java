@@ -1,7 +1,14 @@
 package app.vincenthu.citrix.com.storming.util;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import app.vincenthu.citrix.com.storming.R;
 
 /**
  * Created by Administrator on 6/29/2016.
@@ -14,5 +21,15 @@ public class Utils {
         SimpleDateFormat desiredFormat = new SimpleDateFormat(format);
         String date = desiredFormat.format(dateData);
         return date;
+    }
+
+    public static String getPreferredLocation(Context context){
+        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
+        return p.getString(context.getString(R.string.pref_general_location_key), context.getString(R.string.pref_general_location_default));
+    }
+
+    public static String getPreferredMetric(Context context){
+        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
+        return p.getString(context.getString(R.string.pref_general_units_key),context.getString( R.string.pref_general_units_metric));
     }
 }
