@@ -56,13 +56,13 @@ public class WeatherProvider extends ContentProvider {
         Cursor cursor;
         switch (uriMacher.match(uri)){
             case WEATHER:
-                cursor =  getWeather(uri, projection, sortOrder);
+                cursor =  getWeather(uri, projection, selection, selectionArgs, sortOrder);
                 break;
             case WEATHER_WITH_LOCATION:
                 cursor =  getWeatherbyLocation(uri, projection, sortOrder);
                 break;
             case LOCATION:
-                cursor = getLocation(uri, projection, sortOrder);
+                cursor = getLocation(uri, projection, selection, selectionArgs, sortOrder);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -219,13 +219,13 @@ public class WeatherProvider extends ContentProvider {
         return cursor;
     }
 
-    private Cursor getWeather(Uri uri, String[] projection, String sortOrder){
-        Cursor cursor = dbHelper.getReadableDatabase().query(StormingContract.WeatherInfoEntry.TABLE_NAME, null, null, null, null, null, null);
+    private Cursor getWeather(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder){
+        Cursor cursor = dbHelper.getReadableDatabase().query(StormingContract.WeatherInfoEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
         return cursor;
     }
 
-    private Cursor getLocation(Uri uri, String[] projection, String sortOrder){
-        Cursor cursor = dbHelper.getReadableDatabase().query(StormingContract.LocationEntry.TABLE_NAME, null, null, null, null, null, null);
+    private Cursor getLocation(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder){
+        Cursor cursor = dbHelper.getReadableDatabase().query(StormingContract.LocationEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
         return cursor;
     }
 }

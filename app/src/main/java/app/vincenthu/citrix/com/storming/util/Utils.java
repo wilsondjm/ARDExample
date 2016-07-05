@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -25,7 +26,9 @@ public class Utils {
 
     public static String getPreferredLocation(Context context){
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
-        return p.getString(context.getString(R.string.pref_general_location_key), context.getString(R.string.pref_general_location_default));
+        String location = p.getString(context.getString(R.string.pref_general_location_key), context.getString(R.string.pref_general_location_default));
+        Log.i("Location in preference:", location);
+        return location;
     }
 
     public static String getPreferredMetric(Context context){

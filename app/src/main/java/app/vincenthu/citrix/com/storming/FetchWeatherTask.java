@@ -34,34 +34,28 @@ import app.vincenthu.citrix.com.storming.util.Utils;
 /**
  * Created by Administrator on 6/28/2016.
  */
-public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
+public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
     String logTag = this.getClass().getSimpleName();
     HttpURLConnection urlConnection = null;
     String responseJSON = null;
 
     Activity activity;
-    ArrayAdapter<String> forecastAdapter;
 
-    public FetchWeatherTask(Activity _activity, ArrayAdapter<String> _forecastAdapter){
+    public FetchWeatherTask(Activity _activity){
         super();
         activity = _activity;
-        forecastAdapter = _forecastAdapter;
     }
 
     private String parseDateTime(long seconds){
         return Utils.parseTimefromRealtoStringDate(seconds, "EE M/dd");
     }
 
-    private Uri parseGeoUri(double lat, double lon){
-        Uri resultUrl = Uri.parse(String.format("geo:%f,%f", lat, lon));
-        return resultUrl;
-    }
-
     private int ManageLocation(String name, String latitude, String longitude){
+        String selection = String.format("%s = ?", StormingContract.LocationEntry.COLUMN_NAME_Name);
 
         Cursor cursor = activity.getContentResolver().query(StormingContract.LocationEntry.CONTENT_URI,
-                null,
-                String.format("%s.%s = ?", StormingContract.LocationEntry.TABLE_NAME, StormingContract.LocationEntry.COLUMN_NAME_Name),
+                new String[]{StormingContract.LocationEntry._ID},
+                selection,
                 new String[]{name},
                 null);
 
@@ -76,7 +70,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
             Uri uri = activity.getContentResolver().insert(StormingContract.LocationEntry.CONTENT_URI, values);
             locationID = (int)ContentUris.parseId(uri);
         }
-
+        Log.i("********************", String.valueOf(locationID));
         return locationID;
     }
 
@@ -84,31 +78,6 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
         ContentResolver resolver = activity.getContentResolver();
         int nCount = resolver.bulkInsert(StormingContract.WeatherInfoEntry.CONTENT_URI, valuesList.toArray(new ContentValues[valuesList.size()]));
         return nCount;
-    }
-
-    private String[] queryDBforDisplayWeather(Uri uri, int limitCount){
-        String[] displays = new String[7];
-        Cursor cursor = activity.getContentResolver().query(StormingContract.WeatherInfoEntry.CONTENT_URI, null, null, null, "time DESC + LIMIT 7");
-        int index = 0;
-        if(cursor.moveToFirst()){
-            do{
-                long time = cursor.getLong(cursor.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_TIME));
-                String weather = cursor.getString(cursor.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_WEATHER_CONDITION));
-                String temperature_max = cursor.getString(cursor.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_TEMPERATURE_MAX));
-                String temperature_min = cursor.getString(cursor.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_TEMPERATURE_MIN));
-                String weather_desc = cursor.getString(cursor.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_WEATHER_DESCRIPTION));
-
-                String date = parseDateTime(time);
-
-                displays[index] = String.format("%s   %s/%s - %s/%s", date, weather, weather_desc, temperature_max, temperature_min);
-                index++;
-                if(index > 6){
-                    break;
-                }
-
-                }while(cursor.moveToNext());
-        }
-        return displays;
     }
 
     private ContentValues FromStringstoValue(String wind,
@@ -134,7 +103,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
     }
 
     @Override
-    protected String[] doInBackground(String... params) {
+    protected Void doInBackground(String... params) {
         Log.i(this.getClass().getSimpleName(), String.format("Location : %s, in unit: %s", params[0], params[1]));
         try {
             Uri.Builder builder = new Uri.Builder();
@@ -210,15 +179,6 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
             Log.e(logTag, JSONException.getMessage());
         }
         int nCount = ManageWeatherInfo(valueList);
-        String[] weatherList = queryDBforDisplayWeather(StormingContract.WeatherInfoEntry.CONTENT_URI, nCount);
-        if (weatherList.length < nCount)
-            Toast.makeText(activity, "Error in loading weather from DB", Toast.LENGTH_SHORT).show();
-        return weatherList;
-    }
-
-    @Override
-    protected void onPostExecute(String[] weatherList) {
-        forecastAdapter.clear();
-        forecastAdapter.addAll(weatherList);
+        return null;
     }
 }
