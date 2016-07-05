@@ -16,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import app.vincenthu.citrix.com.storming.data.StormingContract;
 import app.vincenthu.citrix.com.storming.util.Utils;
@@ -56,6 +57,18 @@ public class forcastFragment extends Fragment implements LoaderManager.LoaderCal
 //        Cursor cursor = getActivity().getContentResolver().query(StormingContract.WeatherInfoEntry.buildWeatherWithLocationUri(location), null, null, null, StormingContract.WeatherInfoEntry.COLUMN_NAME_TIME + " ASC");
         forecastAdapter = new ForecastAdapter(getActivity(), null, 0);
         view.setAdapter(forecastAdapter);
+        view.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView parent, View view, int position, long id) {
+                Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+                if(cursor != null){
+                    String location = Utils.getPreferredLocation(getActivity());
+                    Intent intent = new Intent(getActivity(), DetailActivity.class)
+                            .
+                }
+            }
+        });
+
         return rootview;
     }
 
