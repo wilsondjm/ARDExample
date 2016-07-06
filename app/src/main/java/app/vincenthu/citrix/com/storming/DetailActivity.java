@@ -8,7 +8,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.support.v7.widget.ShareActionProvider;
 
 import app.vincenthu.citrix.com.storming.data.StormingContract;
 import app.vincenthu.citrix.com.storming.util.Utils;
@@ -29,9 +32,16 @@ public class DetailActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().add(app.vincenthu.citrix.com.storming.R.id.detail_activity, new fragment_detail()).commit();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.menu_detail, menu);
+        return true;
+    }
+
     public static class fragment_detail extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
         private static final int DETAILACTIVITY_LOADER = 1;
+        private ShareActionProvider mShareActionProvider = null;
 
         public fragment_detail(){
         }
@@ -51,7 +61,19 @@ public class DetailActivity extends AppCompatActivity {
 
         @Override
         public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-            inflater.inflate(app.vincenthu.citrix.com.storming.R.menu.menu_detail, menu);
+            inflater.inflate(R.menu.menu_detail_fragment, menu);
+            // Retrieve the share menu item
+            MenuItem menuItem = menu.findItem(R.id.action_share);
+            // Get the provider and hold onto it to set/change the share intent.
+            mShareActionProvider =
+                    (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+            // Attach an intent to this ShareActionProvider.  You can update this at any time,
+            // like when the user selects a new piece of data they might like to share.
+            if (mShareActionProvider != null ) {
+                mShareActionProvider.setShareIntent(createShareForecastIntent());
+            } else {
+                Log.d(getClass().getSimpleName(), "Share Action Provider is null?");
+            }
         }
 
         @Override
@@ -98,12 +120,27 @@ public class DetailActivity extends AppCompatActivity {
 
             TextView textView = (TextView)getView().findViewById(R.id.detailedText);
             textView.setText(String.format("%s %s\n%s:\n%s\n%s - %s", time, location, Weather, weather_desc, temperature_min, temperature_max));
+
+            // If onCreateOptionsMenu has already happened, we need to update the share intent now.
+            if (mShareActionProvider != null) {
+                mShareActionProvider.setShareIntent(createShareForecastIntent());
+            }
         }
 
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
+
+        }
+
+        private Intent createShareForecastIntent() {
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+            shareIntent.setType("text/plain");
+
             TextView textView = (TextView)getView().findViewById(R.id.detailedText);
-            textView.setText("");
+            shareIntent.putExtra(Intent.EXTRA_TEXT,
+                    textView.getText());
+            return shareIntent;
         }
     }
 }
