@@ -9,6 +9,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
+import java.util.Vector;
+
 /**
  * Created by Administrator on 6/16/2016.
  */
@@ -32,6 +34,7 @@ public class WeatherProvider extends ContentProvider {
 
     static final int WEATHER = 100;
     static final int WEATHER_WITH_LOCATION = 101;
+    static final int WEATHER_WITH_LOCATION_AND_DATE = 102;
     static final int LOCATION = 200;
 
     static UriMatcher buildUriMacher(){
@@ -39,6 +42,7 @@ public class WeatherProvider extends ContentProvider {
 
         matcher.addURI(StormingContract.CONTENT_AUTHORITY, StormingContract.PATH_WEATHER, WEATHER);
         matcher.addURI(StormingContract.CONTENT_AUTHORITY, StormingContract.PATH_WEATHER + "/*", WEATHER_WITH_LOCATION);
+        matcher.addURI(StormingContract.CONTENT_AUTHORITY, StormingContract.PATH_WEATHER + "/*/#", WEATHER_WITH_LOCATION_AND_DATE);
         matcher.addURI(StormingContract.CONTENT_AUTHORITY, StormingContract.PATH_LOCATION, LOCATION);
 
         return matcher;
@@ -61,6 +65,9 @@ public class WeatherProvider extends ContentProvider {
             case WEATHER_WITH_LOCATION:
                 cursor =  getWeatherbyLocation(uri, projection, sortOrder);
                 break;
+            case WEATHER_WITH_LOCATION_AND_DATE:
+                cursor = getWeatherbyLocationandTime(uri, projection, sortOrder);
+                break;
             case LOCATION:
                 cursor = getLocation(uri, projection, selection, selectionArgs, sortOrder);
                 break;
@@ -82,6 +89,8 @@ public class WeatherProvider extends ContentProvider {
                 return StormingContract.LocationEntry.CONTENT_TYPE;
             case WEATHER_WITH_LOCATION:
                 return StormingContract.WeatherInfoEntry.CONTENT_TYPE;
+            case WEATHER_WITH_LOCATION_AND_DATE:
+                return StormingContract.WeatherInfoEntry.CONTENT_TYPE_ITEM;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -203,16 +212,42 @@ public class WeatherProvider extends ContentProvider {
 
     private Cursor getWeatherbyLocation(Uri uri, String[] projection, String sortOrder){
         String location = StormingContract.WeatherInfoEntry.getLocationSegement(uri);
+        Long time = StormingContract.WeatherInfoEntry.getLocationStartDate(uri);
 
         StringBuilder selection = new StringBuilder("");
         selection.append(StormingContract.LocationEntry.TABLE_NAME).append(".").append(StormingContract.LocationEntry.COLUMN_NAME_Name).append(" = ?");
-        String []selectionArgs = new String[]{location};
-
+        Vector<String> selectionArgs = new Vector<String>();
+        selectionArgs.add(location);
+        if ( time != -1l){
+            selection.append(" and ").append(StormingContract.WeatherInfoEntry.COLUMN_NAME_TIME).append(" >= ?");
+            selectionArgs.add(String.valueOf(time));
+        }
 
         Cursor cursor = view_weatherbylocationquerybuilder.query(dbHelper.getReadableDatabase(),
                 projection,
                 selection.toString(),
-                selectionArgs,
+                selectionArgs.toArray(new String[selectionArgs.size()]),
+                null,
+                null,
+                sortOrder);
+        return cursor;
+    }
+
+    private Cursor getWeatherbyLocationandTime(Uri uri, String[] projection, String sortOrder){
+        String location = StormingContract.WeatherInfoEntry.getLocationSegement(uri);
+        Long time = StormingContract.WeatherInfoEntry.getLocationtime(uri);
+
+        StringBuilder selection = new StringBuilder("");
+        selection.append(StormingContract.LocationEntry.TABLE_NAME).append(".").append(StormingContract.LocationEntry.COLUMN_NAME_Name).append(" = ?");
+        Vector<String> selectionArgs = new Vector<String>();
+        selectionArgs.add(location);
+        selection.append(" and ").append(StormingContract.WeatherInfoEntry.COLUMN_NAME_TIME).append(" = ?");
+        selectionArgs.add(String.valueOf(time));
+
+        Cursor cursor = view_weatherbylocationquerybuilder.query(dbHelper.getReadableDatabase(),
+                projection,
+                selection.toString(),
+                selectionArgs.toArray(new String[selectionArgs.size()]),
                 null,
                 null,
                 sortOrder);

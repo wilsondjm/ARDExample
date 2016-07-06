@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 /**
  * Created by Administrator on 6/2/2016.
@@ -50,8 +51,33 @@ public final class StormingContract {
             return CONTENT_URI.buildUpon().appendPath(location).build();
         }
 
+        public static Uri buildWeatherUriwithLocationandtime(String location, long time){
+            return CONTENT_URI.buildUpon().appendPath(location)
+                    .appendPath(String.valueOf(time)).build();
+        }
+
+        public static Uri buildWeatherUriwithLocationandStarttime(String location, long time){
+            return CONTENT_URI.buildUpon().appendPath(location).appendQueryParameter("startdate", String.valueOf(time)).build();
+        }
+
         public static String getLocationSegement(Uri uri){
             return uri.getPathSegments().get(1);
+        }
+
+        public static Long getLocationtime(Uri uri){
+            return Long.parseLong(uri.getPathSegments().get(2));
+        }
+
+        public static Long getLocationStartDate(Uri uri){
+            String time = uri.getQueryParameter("startdate");
+            if(time != null && time.length() > 0){
+                try{
+                    return Long.parseLong(time);
+                }catch (Exception e){
+                    Log.e(WeatherInfoEntry.class.getClass().getSimpleName(), e.getMessage());
+                }
+            }
+            return -1l;
         }
     }
 

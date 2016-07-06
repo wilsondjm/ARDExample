@@ -17,7 +17,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CalendarView;
 import android.widget.ListView;
+
+import java.sql.Date;
+
 import app.vincenthu.citrix.com.storming.data.StormingContract;
 import app.vincenthu.citrix.com.storming.util.Utils;
 
@@ -53,8 +57,6 @@ public class forcastFragment extends Fragment implements LoaderManager.LoaderCal
         View rootview = inflater.inflate(app.vincenthu.citrix.com.storming.R.layout.fragment_forcast, container, false);
         ListView view = (ListView) rootview.findViewById(app.vincenthu.citrix.com.storming.R.id.listview_forecast);
         String location = Utils.getPreferredLocation(getActivity());
-        Log.i("In onCreateView", location);
-//        Cursor cursor = getActivity().getContentResolver().query(StormingContract.WeatherInfoEntry.buildWeatherWithLocationUri(location), null, null, null, StormingContract.WeatherInfoEntry.COLUMN_NAME_TIME + " ASC");
         forecastAdapter = new ForecastAdapter(getActivity(), null, 0);
         view.setAdapter(forecastAdapter);
         view.setOnItemClickListener(new AdapterView.OnItemClickListener(){
@@ -63,13 +65,14 @@ public class forcastFragment extends Fragment implements LoaderManager.LoaderCal
                 Cursor cursor = (Cursor) parent.getItemAtPosition(position);
                 if(cursor != null){
                     String location = Utils.getPreferredLocation(getActivity());
+                    Uri uri = StormingContract.WeatherInfoEntry.buildWeatherUriwithLocationandtime(location,
+                            cursor.getLong(cursor.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_TIME)));
                     Intent intent = new Intent(getActivity(), DetailActivity.class)
-                            .putExtra(Intent.EXTRA_TEXT, String.valueOf(cursor.getLong(cursor.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_TIME))));
+                            .setData(uri);
                     startActivity(intent);
                 }
             }
         });
-
         return rootview;
     }
 
@@ -119,15 +122,14 @@ public class forcastFragment extends Fragment implements LoaderManager.LoaderCal
     private void updateWeather() {
         String location = Utils.getPreferredLocation(getActivity());
         String unit = Utils.getPreferredMetric(getActivity());
-        Log.i("In updateWeather", location);
         new FetchWeatherTask(this.getActivity()).execute(location, unit);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String location = Utils.getPreferredLocation(getActivity());
-        Log.i("In onCreateLoader", location);
-        return new CursorLoader(getActivity(), StormingContract.WeatherInfoEntry.buildWeatherWithLocationUri(location),
+        long time =Utils.getdaytotoday();
+        return new CursorLoader(getActivity(), StormingContract.WeatherInfoEntry.buildWeatherUriwithLocationandStarttime(location, time/1000l),
                 null, null, null, StormingContract.WeatherInfoEntry.COLUMN_NAME_TIME + " ASC");
     }
 

@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import app.vincenthu.citrix.com.storming.R;
@@ -22,6 +23,12 @@ public class Utils {
         SimpleDateFormat desiredFormat = new SimpleDateFormat(format);
         String date = desiredFormat.format(dateData);
         return date;
+    }
+
+    public static long getdaytotoday(){
+        Calendar cal = Calendar.getInstance();
+        cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        return cal.getTimeInMillis();
     }
 
     public static String getPreferredLocation(Context context){
