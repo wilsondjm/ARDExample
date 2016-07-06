@@ -64,7 +64,8 @@ public class forcastFragment extends Fragment implements LoaderManager.LoaderCal
                 if(cursor != null){
                     String location = Utils.getPreferredLocation(getActivity());
                     Intent intent = new Intent(getActivity(), DetailActivity.class)
-                            .
+                            .putExtra(Intent.EXTRA_TEXT, String.valueOf(cursor.getLong(cursor.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_TIME))));
+                    startActivity(intent);
                 }
             }
         });

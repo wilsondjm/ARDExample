@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import app.vincenthu.citrix.com.storming.util.Utils;
+
 public class DetailActivity extends AppCompatActivity {
 
     @Override
@@ -40,8 +42,10 @@ public class DetailActivity extends AppCompatActivity {
 
             if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
                 String message = intent.getStringExtra(Intent.EXTRA_TEXT);
+                long time = Long.parseLong(message);
+                String time_text = Utils.parseTimefromRealtoStringDate(time, "EE M/dd");
                 TextView textView = (TextView) rootView.findViewById(app.vincenthu.citrix.com.storming.R.id.detailedText);
-                textView.setText(message);
+                textView.setText(time_text);
             }
             return rootView;
         }
