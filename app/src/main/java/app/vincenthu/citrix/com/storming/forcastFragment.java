@@ -17,10 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.CalendarView;
 import android.widget.ListView;
-
-import java.sql.Date;
 
 import app.vincenthu.citrix.com.storming.data.StormingContract;
 import app.vincenthu.citrix.com.storming.util.Utils;
@@ -39,12 +36,6 @@ public class forcastFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     @Override
-    public void onStart(){
-        super.onStart();
-        updateWeather();
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
@@ -56,7 +47,6 @@ public class forcastFragment extends Fragment implements LoaderManager.LoaderCal
         // Inflate the layout for this fragment
         View rootview = inflater.inflate(app.vincenthu.citrix.com.storming.R.layout.fragment_forcast, container, false);
         ListView view = (ListView) rootview.findViewById(app.vincenthu.citrix.com.storming.R.id.listview_forecast);
-        String location = Utils.getPreferredLocation(getActivity());
         forecastAdapter = new ForecastAdapter(getActivity(), null, 0);
         view.setAdapter(forecastAdapter);
         view.setOnItemClickListener(new AdapterView.OnItemClickListener(){
@@ -123,6 +113,11 @@ public class forcastFragment extends Fragment implements LoaderManager.LoaderCal
         String location = Utils.getPreferredLocation(getActivity());
         String unit = Utils.getPreferredMetric(getActivity());
         new FetchWeatherTask(this.getActivity()).execute(location, unit);
+    }
+
+    public void onLocationChanged(){
+        updateWeather();
+        getLoaderManager().restartLoader(forececast_loader_id, null, this);
     }
 
     @Override
