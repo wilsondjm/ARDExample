@@ -27,7 +27,7 @@ public class ForecastAdapter extends CursorAdapter{
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        ((TextView) view).setText(getContentFromCursor(cursor));
+    //    ((TextView) view).setText(getContentFromCursor(cursor));
     }
 
     private String getContentFromCursor(Cursor cursor){
