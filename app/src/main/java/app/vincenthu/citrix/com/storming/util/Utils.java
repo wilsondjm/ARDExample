@@ -2,7 +2,6 @@ package app.vincenthu.citrix.com.storming.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -17,6 +16,8 @@ import app.vincenthu.citrix.com.storming.R;
  */
 public class Utils {
 
+    public enum days {yesterday, today, tomorrow, the_day_after_tomorrow, notinscope}
+
     public static String parseTimefromRealtoStringDate(long seconds, String format){
         long milliseconds = seconds * 1000;
         Date dateData = new Date(milliseconds);
@@ -29,6 +30,29 @@ public class Utils {
         Calendar cal = Calendar.getInstance();
         cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
         return cal.getTimeInMillis();
+    }
+
+    public static days getDayoftime(long seconds){
+        long todayinMillis = getdaytotoday();
+        if(todayinMillis <= seconds * 1000){
+            if((todayinMillis + 24 * 60 * 60 * 1000) > seconds * 1000){
+                return days.today;
+            }
+            else if((todayinMillis + 2 * 24 * 60 * 60 * 1000) > seconds * 1000){
+                return days.tomorrow;
+            }
+            else if((todayinMillis + 3 * 24 * 60 * 60 * 1000) > seconds * 1000){
+                return days.the_day_after_tomorrow;
+            }else{
+                return days.notinscope;
+            }
+        }else{
+            if(((todayinMillis - 24 * 60 * 60 * 1000) <= seconds * 1000)){
+                return days.yesterday;
+            }else{
+                return days.notinscope;
+            }
+        }
     }
 
     public static String getPreferredLocation(Context context){
