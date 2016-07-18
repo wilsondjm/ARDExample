@@ -18,6 +18,10 @@ public class Utils {
 
     public enum days {yesterday, today, tomorrow, the_day_after_tomorrow, notinscope}
 
+    public static String formatTemperature(Context context, double temperature) {
+        return context.getString(R.string.format_temperature, temperature);
+    }
+
     public static String parseTimefromRealtoStringDate(long seconds, String format){
         long milliseconds = seconds * 1000;
         Date dateData = new Date(milliseconds);
@@ -42,7 +46,7 @@ public class Utils {
                 return days.tomorrow;
             }
             else if((todayinMillis + 3 * 24 * 60 * 60 * 1000) > seconds * 1000){
-                return days.the_day_after_tomorrow;
+                return days.notinscope;
             }else{
                 return days.notinscope;
             }
