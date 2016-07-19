@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
     <string name="app_name">Storming</string>
 
     <string name="text"> text </string>
@@ -20,5 +20,7 @@
     <string name="pref_general_degreeunits_default">@string/pref_general_units_metric</string>
 
     <string name="menu_action_map_title">Locate in Map</string>
+
+    <string name="format_temperature"><xliff:g id="temp">%1.0f</xliff:g>\u00B0</string>
 
 </resources>
