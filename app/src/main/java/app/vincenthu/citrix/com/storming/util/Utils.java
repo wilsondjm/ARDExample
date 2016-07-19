@@ -16,10 +16,32 @@ import app.vincenthu.citrix.com.storming.R;
  */
 public class Utils {
 
-    public enum days {yesterday, today, tomorrow, the_day_after_tomorrow, notinscope}
+    public enum days {Yesterday, Today, Tomorrow, the_day_after_tomorrow, notinscope}
 
     public static String formatTemperature(Context context, double temperature) {
         return context.getString(R.string.format_temperature, temperature);
+    }
+
+    public static String getWindDirection(float degrees){
+        String direction = "Unknown";
+        if (degrees >= 337.5 || degrees < 22.5) {
+            direction = "N";
+        } else if (degrees >= 22.5 && degrees < 67.5) {
+            direction = "NE";
+        } else if (degrees >= 67.5 && degrees < 112.5) {
+            direction = "E";
+        } else if (degrees >= 112.5 && degrees < 157.5) {
+            direction = "SE";
+        } else if (degrees >= 157.5 && degrees < 202.5) {
+            direction = "S";
+        } else if (degrees >= 202.5 && degrees < 247.5) {
+            direction = "SW";
+        } else if (degrees >= 247.5 && degrees < 292.5) {
+            direction = "W";
+        } else if (degrees >= 292.5 && degrees < 337.5) {
+            direction = "NW";
+        }
+        return direction;
     }
 
     public static String parseTimefromRealtoStringDate(long seconds, String format){
@@ -40,10 +62,10 @@ public class Utils {
         long todayinMillis = getdaytotoday();
         if(todayinMillis <= seconds * 1000){
             if((todayinMillis + 24 * 60 * 60 * 1000) > seconds * 1000){
-                return days.today;
+                return days.Today;
             }
             else if((todayinMillis + 2 * 24 * 60 * 60 * 1000) > seconds * 1000){
-                return days.tomorrow;
+                return days.Tomorrow;
             }
             else if((todayinMillis + 3 * 24 * 60 * 60 * 1000) > seconds * 1000){
                 return days.notinscope;
@@ -52,7 +74,7 @@ public class Utils {
             }
         }else{
             if(((todayinMillis - 24 * 60 * 60 * 1000) <= seconds * 1000)){
-                return days.yesterday;
+                return days.Yesterday;
             }else{
                 return days.notinscope;
             }

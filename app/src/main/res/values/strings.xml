@@ -22,5 +22,7 @@
     <string name="menu_action_map_title">Locate in Map</string>
 
     <string name="format_temperature"><xliff:g id="temp">%1.0f</xliff:g>\u00B0</string>
-
+    <string name="format_humidity"><xliff:g id="humidity">%1.0f</xliff:g>%%</string>
+    <string name="format_wind"><xliff:g id="wind">%1$1.0f</xliff:g>km/H <xliff:g id="wind_direction">%2$s</xliff:g></string>
+    <string name="format_pressure"><xliff:g id="pressure">%1.0f</xliff:g>hPa</string>
 </resources>

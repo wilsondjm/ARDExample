@@ -74,6 +74,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
     }
 
     private ContentValues FromStringstoValue(String wind,
+                                             String wind_direction,
                                              String weatherDsc,
                                              String weather,
                                              String temperature_min,
@@ -84,6 +85,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
                                              int locationID){
         ContentValues values = new ContentValues();
         values.put(StormingContract.WeatherInfoEntry.COLUMN_NAME_WIND, wind);
+        values.put(StormingContract.WeatherInfoEntry.COLUMN_NAME_WIND_DIRECTION, wind_direction);
         values.put(StormingContract.WeatherInfoEntry.COLUMN_NAME_WEATHER_DESCRIPTION, weatherDsc);
         values.put(StormingContract.WeatherInfoEntry.COLUMN_NAME_WEATHER_CONDITION, weather);
         values.put(StormingContract.WeatherInfoEntry.COLUMN_NAME_TEMPERATURE_MIN, temperature_min);
@@ -158,6 +160,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
                 String weather = (String)weatherObject.get("main");
                 String weatherDsc = weatherObject.getString("description");
                 String wind = day.getString("speed");
+                String wind_direction = day.getString("deg");
                 String pressure = day.getString("pressure");
                 String humidity = day.getString("humidity");
                 String temperature_min = Double.toString(day.getJSONObject("temp").getDouble("min"));
@@ -166,7 +169,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
                 String row = String.format("%s   %s - %s/%s", time, weather, temperature_max, temperature_min);
                 rows.add(row);
 
-                valueList.add(FromStringstoValue(wind, weatherDsc, weather, temperature_min, temperature_max, timeinSeconds, humidity, pressure ,locationID));
+                valueList.add(FromStringstoValue(wind, wind_direction, weatherDsc, weather, temperature_min, temperature_max, timeinSeconds, humidity, pressure ,locationID));
             }
         } catch (Exception JSONException) {
             Log.e(logTag, JSONException.getMessage());

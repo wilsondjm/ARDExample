@@ -40,6 +40,7 @@ public final class StormingContract {
         public static final String COLUMN_NAME_TIME = "time";
         public static final String COLUMN_NAME_LOCATION_ID = "location_id";
         public static final String COLUMN_NAME_WIND = "wind";
+        public static final String COLUMN_NAME_WIND_DIRECTION = "wind_direction";
         public static final String COLUMN_NAME_HUMIDITY = "humidity";
         public static final String COLUMN_NAME_PRESSURE = "pressure";
 
@@ -108,6 +109,7 @@ public final class StormingContract {
             WeatherInfoEntry.COLUMN_NAME_WEATHER_CONDITION + " TEXT NOT NULL," +
             WeatherInfoEntry.COLUMN_NAME_WEATHER_DESCRIPTION + " TEXT NOT NULL," +
             WeatherInfoEntry.COLUMN_NAME_WIND + " TEXT NOT NULL," +
+            WeatherInfoEntry.COLUMN_NAME_WIND_DIRECTION + " TEXT NOT NULL," +
             " FOREIGN KEY ( " + WeatherInfoEntry.COLUMN_NAME_LOCATION_ID + " ) REFERENCES " + LocationEntry.TABLE_NAME + " ( " + LocationEntry._ID + " ), " +
             " UNIQUE ( " + WeatherInfoEntry.COLUMN_NAME_TIME + ", " + WeatherInfoEntry.COLUMN_NAME_LOCATION_ID + " ) ON CONFLICT REPLACE);";
 
