@@ -43,6 +43,7 @@ public final class StormingContract {
         public static final String COLUMN_NAME_WIND_DIRECTION = "wind_direction";
         public static final String COLUMN_NAME_HUMIDITY = "humidity";
         public static final String COLUMN_NAME_PRESSURE = "pressure";
+        public static final String COLUMN_NAME_WEATHER_ID = "weather_id";
 
         public static Uri buildWeatherUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
@@ -103,6 +104,7 @@ public final class StormingContract {
             WeatherInfoEntry.COLUMN_NAME_HUMIDITY + " TEXT NOT NULL," +
             WeatherInfoEntry.COLUMN_NAME_LOCATION_ID + " INTEGER NOT NULL," +
             WeatherInfoEntry.COLUMN_NAME_PRESSURE + " TEXT NOT NULL," +
+            WeatherInfoEntry.COLUMN_NAME_WEATHER_ID + " TEXT NOT NULL," +
             WeatherInfoEntry.COLUMN_NAME_TEMPERATURE_MAX + " TEXT NOT NULL," +
             WeatherInfoEntry.COLUMN_NAME_TEMPERATURE_MIN + " TEXT NOT NULL," +
             WeatherInfoEntry.COLUMN_NAME_TIME + " REAL NOT NULL," +
