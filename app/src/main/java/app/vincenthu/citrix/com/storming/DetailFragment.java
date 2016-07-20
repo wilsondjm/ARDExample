@@ -10,7 +10,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,8 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import app.vincenthu.citrix.com.storming.data.StormingContract;
 import app.vincenthu.citrix.com.storming.util.Utils;
@@ -120,6 +117,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         long timefDB = data.getLong(data.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_TIME));
         String location = Utils.getPreferredLocation(getActivity());
         String Weather = data.getString(data.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_WEATHER_CONDITION));
+        String weatherID = data.getString(data.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_WEATHER_ID));
         String temperature_max = data.getString(data.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_TEMPERATURE_MAX));
         String temperature_min = data.getString(data.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_TEMPERATURE_MIN));
         String weather_desc = data.getString(data.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_WEATHER_DESCRIPTION));
@@ -137,7 +135,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         dayView.setText(Utils.parseTimefromRealtoStringDate(timefDB, "MMM dd"));
         maxDegreeView.setText(Utils.formatTemperature(getActivity(), Double.parseDouble(temperature_max)));
         minDegreeView.setText(Utils.formatTemperature(getActivity(), Double.parseDouble(temperature_min)));
-        weatherImgView.setImageResource(R.drawable.art_clear);
+        weatherImgView.setImageResource(Utils.getArtResourceForWeatherCondition(Integer.parseInt(weatherID)));
         humidityView.setText(getActivity().getString(R.string.format_humidity, Float.parseFloat(humidity)));
         windView.setText(getActivity().getString(R.string.format_wind, Float.parseFloat(wind), Utils.getWindDirection(Float.parseFloat(wind_direction))));
         pressureView.setText(getActivity().getString(R.string.format_pressure, Float.parseFloat(pressure)));

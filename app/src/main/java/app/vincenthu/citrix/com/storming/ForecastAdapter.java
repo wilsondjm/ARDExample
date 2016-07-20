@@ -62,6 +62,13 @@ public class ForecastAdapter extends CursorAdapter{
         viewHolder.weatherView.setText(dataStrings[1]);
         viewHolder.maxDegree.setText(Utils.formatTemperature(context, Double.parseDouble(dataStrings[2])));
         viewHolder.minDegree.setText(Utils.formatTemperature(context, Double.parseDouble(dataStrings[3])));
+
+        int viewType = getItemViewType(cursor.getPosition());
+        if(viewType == TODAY_VIEW_TYPE){
+            viewHolder.weatherImg.setImageResource(Utils.getArtResourceForWeatherCondition(Integer.parseInt(dataStrings[4])));
+        }else{
+            viewHolder.weatherImg.setImageResource(Utils.getIconResourceForWeatherCondition(Integer.parseInt(dataStrings[4])));
+        }
     }
 
     private String[] getContentFromCursor(Cursor cursor){
@@ -70,6 +77,7 @@ public class ForecastAdapter extends CursorAdapter{
         String temperature_max = cursor.getString(cursor.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_TEMPERATURE_MAX));
         String temperature_min = cursor.getString(cursor.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_TEMPERATURE_MIN));
         String weather_desc = cursor.getString(cursor.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_WEATHER_DESCRIPTION));
+        String weatherID = cursor.getString(cursor.getColumnIndex(StormingContract.WeatherInfoEntry.COLUMN_NAME_WEATHER_ID));
 
 
         String date = Utils.parseTimefromRealtoStringDate(time, "EE M/dd");
@@ -77,7 +85,7 @@ public class ForecastAdapter extends CursorAdapter{
             date = Utils.getDayoftime(time).name();
         }
 
-        return new String[]{date, weather_desc, temperature_max, temperature_min};
+        return new String[]{date, weather_desc, temperature_max, temperature_min, weatherID};
     }
 
 
