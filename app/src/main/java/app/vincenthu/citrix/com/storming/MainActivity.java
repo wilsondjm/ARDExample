@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String FRAGMENT_TAG = "Forecast";
     private String mLocation = "";
+    private boolean isTwoPane = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,10 +24,13 @@ public class MainActivity extends AppCompatActivity {
         mLocation = PreferenceManager.getDefaultSharedPreferences(this).getString(getString(R.string.pref_general_location_key),
                 getString(R.string.pref_general_location_default));
         setContentView(app.vincenthu.citrix.com.storming.R.layout.activity_main);
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(app.vincenthu.citrix.com.storming.R.id.container, new forcastFragment(), FRAGMENT_TAG)
-                    .commit();
+        if (findViewById(R.id.detail_forcast_container) != null){
+            isTwoPane = true;
+            if (savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.detail_forcast_container, new forcastFragment(), FRAGMENT_TAG)
+                        .commit();
+            }
         }
     }
 
@@ -43,4 +47,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+
 }

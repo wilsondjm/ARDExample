@@ -72,41 +72,7 @@ public class forcastFragment extends Fragment implements LoaderManager.LoaderCal
         super.onActivityCreated(savedInstanceState);
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(app.vincenthu.citrix.com.storming.R.menu.menu, menu);
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-
-        int id = item.getItemId();
-
-        if (id == app.vincenthu.citrix.com.storming.R.id.action_refresh){
-            updateWeather();
-            return true;
-        }
-
-        if (id == app.vincenthu.citrix.com.storming.R.id.action_settings){
-            Intent intent = new Intent(getContext(), SettingsActivity.class);
-            startActivity(intent);
-            return true;
-        }
-
-        if (id == app.vincenthu.citrix.com.storming.R.id.action_locatemap){
-            String location = Utils.getPreferredLocation(getActivity());
-            Uri geouri = Uri.parse("geo:0,0?").buildUpon().appendQueryParameter("q", location).build();
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(geouri);
-            if(intent.resolveActivity(getActivity().getPackageManager())!=null){
-                startActivity(intent);
-            }else{
-                Log.e(this.getClass().getSimpleName(), "Failed to resolve the map intent wit geo" + geouri.toString());
-            }
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     // ---- custom functions
     private void updateWeather() {
